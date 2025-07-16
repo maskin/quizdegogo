@@ -1,0 +1,300 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  username    String   @unique
+  password    String
+  firstName   String?
+  lastName    String?
+  avatar      String?
+  language    String   @default("en")
+  timezone    String   @default("UTC")
+  role        UserRole @default(USER)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Learning profile
+  learningStyle    LearningStyle @default(VISUAL)
+  difficultyLevel  Int           @default(1)
+  preferredTopics  String[]
+  
+  // Relations
+  quizAttempts     QuizAttempt[]
+  achievements     UserAchievement[]
+  learningPaths    UserLearningPath[]
+  analytics        UserAnalytics[]
+  subscriptions    Subscription[]
+
+  @@map("users")
+}
+
+model Quiz {
+  id           String     @id @default(cuid())
+  title        String
+  description  String?
+  category     String
+  difficulty   Int        @default(1) // 1-10 scale
+  language     String     @default("en")
+  tags         String[]
+  isPublic     Boolean    @default(true)
+  isActive     Boolean    @default(true)
+  estimatedTime Int       @default(300) // seconds
+  createdBy    String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  // AI Metadata
+  aiGenerated    Boolean  @default(false)
+  qualityScore   Float    @default(0.0)
+  engagement     Float    @default(0.0)
+  effectiveness  Float    @default(0.0)
+
+  // Relations
+  questions      Question[]
+  attempts       QuizAttempt[]
+  analytics      QuizAnalytics[]
+
+  @@map("quizzes")
+}
+
+model Question {
+  id           String       @id @default(cuid())
+  quizId       String
+  quiz         Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  type         QuestionType @default(MULTIPLE_CHOICE)
+  question     String
+  options      Json?        // For multiple choice options
+  correctAnswer String
+  explanation  String?
+  difficulty   Int          @default(1)
+  order        Int          @default(0)
+  timeLimit    Int?         // seconds
+  points       Int          @default(1)
+  
+  // Media
+  imageUrl     String?
+  audioUrl     String?
+  videoUrl     String?
+  
+  // AI Metadata
+  aiGenerated    Boolean  @default(false)
+  cognitiveLoad  Float    @default(0.0)
+  discrimination Float    @default(0.0)
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  attempts     QuestionAttempt[]
+
+  @@map("questions")
+}
+
+model QuizAttempt {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quizId       String
+  quiz         Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  
+  startedAt    DateTime @default(now())
+  completedAt  DateTime?
+  score        Float    @default(0.0)
+  totalQuestions Int    @default(0)
+  correctAnswers Int    @default(0)
+  timeSpent    Int      @default(0) // seconds
+  
+  // Learning effectiveness
+  learningGain    Float  @default(0.0)
+  retentionScore  Float  @default(0.0)
+  engagementScore Float  @default(0.0)
+  
+  // Relations
+  questionAttempts QuestionAttempt[]
+
+  @@map("quiz_attempts")
+}
+
+model QuestionAttempt {
+  id              String      @id @default(cuid())
+  quizAttemptId   String
+  quizAttempt     QuizAttempt @relation(fields: [quizAttemptId], references: [id], onDelete: Cascade)
+  questionId      String
+  question        Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  
+  userAnswer      String
+  isCorrect       Boolean
+  timeSpent       Int         @default(0) // seconds
+  confidence      Float?      // 0-1 scale
+  hintsUsed       Int         @default(0)
+  attempts        Int         @default(1)
+  
+  answeredAt      DateTime    @default(now())
+
+  @@map("question_attempts")
+}
+
+model UserAnalytics {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  date              DateTime @default(now())
+  
+  // Daily metrics
+  questionsAnswered Int      @default(0)
+  correctAnswers    Int      @default(0)
+  timeSpent         Int      @default(0) // seconds
+  quizzesCompleted  Int      @default(0)
+  
+  // Learning metrics
+  knowledgeGain     Float    @default(0.0)
+  retentionRate     Float    @default(0.0)
+  learningVelocity  Float    @default(0.0)
+  engagementScore   Float    @default(0.0)
+  
+  // Adaptive metrics
+  optimalDifficulty Float    @default(0.0)
+  preferredTopics   String[]
+  learningPattern   Json?
+  
+  @@unique([userId, date])
+  @@map("user_analytics")
+}
+
+model QuizAnalytics {
+  id               String   @id @default(cuid())
+  quizId           String
+  quiz             Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  
+  date             DateTime @default(now())
+  
+  // Usage metrics
+  attempts         Int      @default(0)
+  completions      Int      @default(0)
+  avgScore         Float    @default(0.0)
+  avgTimeSpent     Int      @default(0)
+  
+  // Quality metrics
+  difficulty       Float    @default(0.0)
+  engagement       Float    @default(0.0)
+  effectiveness    Float    @default(0.0)
+  retention        Float    @default(0.0)
+  
+  @@unique([quizId, date])
+  @@map("quiz_analytics")
+}
+
+model UserAchievement {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  type        AchievementType
+  title       String
+  description String
+  unlockedAt  DateTime @default(now())
+  points      Int      @default(0)
+  
+  @@map("user_achievements")
+}
+
+model UserLearningPath {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  name        String
+  description String?
+  category    String
+  difficulty  Int      @default(1)
+  progress    Float    @default(0.0) // 0-100
+  startedAt   DateTime @default(now())
+  completedAt DateTime?
+  
+  // AI recommendations
+  aiGenerated Boolean  @default(false)
+  quizIds     String[] // Ordered list of quiz IDs
+  
+  @@map("user_learning_paths")
+}
+
+model Subscription {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  type      SubscriptionType @default(FREE)
+  status    SubscriptionStatus @default(ACTIVE)
+  startDate DateTime         @default(now())
+  endDate   DateTime?
+  
+  // Billing
+  amount    Float?
+  currency  String           @default("USD")
+  interval  String?          // month, year
+  
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  
+  @@map("subscriptions")
+}
+
+// Enums
+enum UserRole {
+  USER
+  ADMIN
+  MODERATOR
+  EDUCATOR
+}
+
+enum LearningStyle {
+  VISUAL
+  AUDITORY
+  KINESTHETIC
+  READING
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+  FILL_IN_BLANK
+  ESSAY
+  MATCHING
+  ORDERING
+  HOTSPOT
+}
+
+enum AchievementType {
+  QUIZ_COMPLETION
+  STREAK
+  ACCURACY
+  SPEED
+  LEARNING_GOAL
+  SOCIAL
+}
+
+enum SubscriptionType {
+  FREE
+  PREMIUM
+  ENTERPRISE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  INACTIVE
+  CANCELLED
+  EXPIRED
+}

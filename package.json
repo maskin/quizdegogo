@@ -1,0 +1,49 @@
+{
+  "name": "quizdegogo",
+  "version": "0.1.0",
+  "description": "Global quiz platform for all life forms - QuizDeGogo MVP",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+    "server:dev": "cd server && npm run dev",
+    "client:dev": "cd client && npm start",
+    "build": "npm run client:build && npm run server:build",
+    "client:build": "cd client && npm run build",
+    "server:build": "cd server && npm run build",
+    "test": "npm run client:test && npm run server:test",
+    "client:test": "cd client && npm test",
+    "server:test": "cd server && npm test",
+    "lint": "npm run client:lint && npm run server:lint",
+    "client:lint": "cd client && npm run lint",
+    "server:lint": "cd server && npm run lint",
+    "start": "npm run server:start",
+    "server:start": "cd server && npm start",
+    "postinstall": "cd client && npm install && cd ../server && npm install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maskin/quizdegogo.git"
+  },
+  "keywords": [
+    "quiz",
+    "education",
+    "learning",
+    "ai",
+    "global",
+    "multilingual",
+    "adaptive-learning"
+  ],
+  "author": "QuizDeGogo Team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/maskin/quizdegogo/issues"
+  },
+  "homepage": "https://github.com/maskin/quizdegogo#readme",
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}
