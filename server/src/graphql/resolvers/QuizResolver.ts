@@ -8,8 +8,6 @@ import { LearningEffectivenessService } from '../../services/LearningEffectivene
 
 @Resolver(Quiz)
 export class QuizResolver {
-  private learningService = new LearningEffectivenessService();
-
   @Query(() => [Quiz])
   async quizzes(
     @Arg('filter', { nullable: true }) filter: QuizFilterInput,
@@ -146,7 +144,8 @@ export class QuizResolver {
       if (!userProfile) throw new Error('User profile not found');
 
       // AI-based recommendation logic
-      const recommendations = await this.learningService.generateRecommendations(
+      const learningService = new LearningEffectivenessService(ctx.prisma);
+      const recommendations = await learningService.generateRecommendations(
         userProfile,
         limit
       );
@@ -274,7 +273,8 @@ export class QuizResolver {
       if (!attempt) throw new Error('Quiz attempt not found');
 
       // Calculate score and learning effectiveness
-      const { score, learningMetrics, questionAttempts } = await this.learningService
+      const learningService = new LearningEffectivenessService(ctx.prisma);
+      const { score, learningMetrics, questionAttempts } = await learningService
         .calculateLearningEffectiveness(attempt, answers);
 
       // Update attempt with results
@@ -303,7 +303,7 @@ export class QuizResolver {
       });
 
       // Update user analytics
-      await this.learningService.updateUserAnalytics(ctx.user.id, completedAttempt);
+      await learningService.updateUserAnalytics(ctx.user.id, completedAttempt);
 
       logger.info(`Quiz attempt completed: ${attemptId} with score: ${score}`);
       return completedAttempt;
