@@ -1,4 +1,5 @@
 import { InputType, Field, Int } from 'type-graphql';
+import { GraphQLJSON } from 'graphql-type-json';
 
 @InputType()
 export class QuizFilterInput {
@@ -47,6 +48,9 @@ export class CreateQuizInput {
   @Field(() => [String])
   tags!: string[];
 
+  @Field(() => Int, { defaultValue: 300 })
+  estimatedTime!: number;
+
   @Field(() => [CreateQuestionInput])
   questions!: CreateQuestionInput[];
 }
@@ -59,12 +63,30 @@ export class CreateQuestionInput {
   @Field()
   type!: string;
 
+  @Field(() => GraphQLJSON, { nullable: true })
+  options?: any;
+
   @Field()
   correctAnswer!: string;
 
   @Field({ nullable: true })
   explanation?: string;
 
-  @Field(() => Int)
+  @Field(() => Int, { defaultValue: 1 })
   difficulty!: number;
+
+  @Field(() => Int, { nullable: true })
+  timeLimit?: number;
+
+  @Field(() => Int, { defaultValue: 1 })
+  points!: number;
+
+  @Field({ nullable: true })
+  imageUrl?: string;
+
+  @Field({ nullable: true })
+  audioUrl?: string;
+
+  @Field({ nullable: true })
+  videoUrl?: string;
 }

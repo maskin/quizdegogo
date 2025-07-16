@@ -1,4 +1,5 @@
 import { ObjectType, Field, ID, Int, Float } from 'type-graphql';
+import { Question } from './Question';
 
 @ObjectType()
 export class Quiz {
@@ -30,5 +31,29 @@ export class Quiz {
   effectiveness!: number;
 
   @Field()
+  isPublic!: boolean;
+
+  @Field()
+  isActive!: boolean;
+
+  @Field()
+  aiGenerated!: boolean;
+
+  @Field(() => Float)
+  qualityScore!: number;
+
+  @Field(() => Float)
+  engagement!: number;
+
+  @Field({ nullable: true })
+  createdBy?: string;
+
+  @Field()
   createdAt!: Date;
+
+  @Field()
+  updatedAt!: Date;
+
+  @Field(() => [Question], { nullable: true })
+  questions?: Question[];
 }
