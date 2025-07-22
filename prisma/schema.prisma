@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String @id @default(cuid())
+  email    String @unique
+  name     String
+  password String
+  role     String @default("user") // "user" | "admin"
+  
+  answers Answer[]
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Category {
+  id          String @id @default(cuid())
+  name        String
+  description String?
+  
+  questions Question[]
+  
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("categories")
+}
+
+model Question {
+  id          String  @id @default(cuid())
+  categoryId  String  @map("category_id")
+  title       String
+  description String?
+  difficulty  Int     @default(3) // 1-5
+  explanation String?
+  timeLimit   Int?    @map("time_limit") // seconds, null means no limit
+  
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  choices  Choice[]
+  answers  Answer[]
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("questions")
+}
+
+model Choice {
+  id          String  @id @default(cuid())
+  questionId  String  @map("question_id")
+  text        String
+  isCorrect   Boolean @default(false) @map("is_correct")
+  orderIndex  Int     @map("order_index")
+  
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  answers  Answer[]
+  
+  @@map("choices")
+}
+
+model Answer {
+  id             String   @id @default(cuid())
+  userId         String   @map("user_id")
+  questionId     String   @map("question_id")
+  choiceId       String?  @map("choice_id") // nullable for time-up scenarios
+  isCorrect      Boolean  @map("is_correct")
+  responseTimeMs Int      @map("response_time_ms")
+  answeredAt     DateTime @default(now()) @map("answered_at")
+  
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question Question  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  choice   Choice?   @relation(fields: [choiceId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, questionId])
+  @@map("answers")
+}
