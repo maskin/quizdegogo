@@ -12,6 +12,7 @@
 
 # Production
 /build
+dist/
 
 # Misc
 .DS_Store
@@ -25,6 +26,10 @@ yarn-error.log*
 
 # Local env files
 .env*.local
+.env
+.env.development.local
+.env.test.local
+.env.production.local
 
 # Vercel
 .vercel
@@ -35,9 +40,13 @@ yarn-error.log*
 # SQLite
 *.db
 *.db-journal
+*.sqlite
+*.sqlite3
 
 # Prisma
 /prisma/dev.db*
+/server/prisma/migrations/
+/server/prisma/dev.db*
 
 # IDE
 .vscode/
@@ -51,11 +60,11 @@ logs
 pids
 *.pid
 *.seed
+*.pid.lock
 
 # Coverage directory used by tools like istanbul
 coverage/
-
-# nyc test coverage
+*.lcov
 .nyc_output
 
 # Grunt intermediate storage
@@ -95,3 +104,53 @@ profile-*
 
 # VS Code
 .vscode/
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# nuxt.js build output
+.nuxt
+
+# vuepress build output
+.vuepress/dist
+
+# Serverless directories
+.serverless
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# Editor directories and files
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Temporary folders
+tmp/
+temp/
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+
+# Build artifacts
+*.map
+
+# Local development
+.local

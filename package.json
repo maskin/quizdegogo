@@ -1,6 +1,7 @@
 {
   "name": "quizdegogo-app",
   "version": "1.0.0",
+  "description": "QuizDeGogo MVP - Global quiz platform with timer functionality",
   "private": true,
   "scripts": {
     "dev": "next dev --turbo",
@@ -13,6 +14,25 @@
     "db:reset": "prisma migrate reset",
     "db:studio": "prisma studio"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maskin/quizdegogo.git"
+  },
+  "keywords": [
+    "quiz",
+    "education",
+    "learning",
+    "timer",
+    "nextjs",
+    "react",
+    "typescript"
+  ],
+  "author": "QuizDeGogo Team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/maskin/quizdegogo/issues"
+  },
+  "homepage": "https://github.com/maskin/quizdegogo#readme",
   "dependencies": {
     "next": "15.1.3",
     "react": "19.0.0",
@@ -47,6 +67,10 @@
   "devDependencies": {
     "eslint": "^8",
     "eslint-config-next": "15.1.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
