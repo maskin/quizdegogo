@@ -1,343 +1,281 @@
-# QuizDeGogo - Global Learning Platform
+# QuizDeGogo - 全生命体の向学のための時間制限付きクイズシステム
 
-## Overview
+## プロジェクト概要
 
-QuizDeGogo is an AI-powered global quiz platform designed for "all life forms" learning. This repository contains the complete implementation of the MVP (Minimum Viable Product) following the enhanced requirements definition v3.0.
+QuizDeGogoは、"全生命体"の学習を目的とした革新的な時間制限付きクイズプラットフォームです。このMVP（最小実用製品）では、タイマー機能を中心とした高度な学習体験を提供します。
 
-## Features
+## 実装済み機能
 
-### Core Features (MVP)
-- 🧠 **AI-Powered Learning Engine**: Adaptive quiz recommendations based on user learning patterns
-- 🌍 **Multi-language Support**: Japanese and English support with i18next framework
-- 📊 **Learning Analytics**: Real-time tracking of learning effectiveness and progress
-- 💻 **Progressive Web App (PWA)**: Works seamlessly across devices and platforms
-- 🔒 **Secure Authentication**: JWT-based authentication with role-based access control
-- 📈 **Performance Optimized**: Sub-1-second response times with caching strategies
+### 🎯 MVP完成済み機能
+- ⏱️ **革新的タイマーシステム**: 問題ごとの時間制限設定と視覚的カウントダウン
+- 🎨 **視覚的進捗表示**: タイル式進捗インジケーターで直感的な状況把握
+- ⚡ **ワンクリック回答**: 選択肢クリックで即座に自動送信
+- 🔄 **自動タイムアップ処理**: 時間切れ時の自動回答記録
+- 🔐 **認証システム**: NextAuth.js v5による安全なユーザー管理
+- 📊 **リアルタイム結果表示**: 即座に正誤判定と結果表示
 
-### Technology Stack
+### 技術スタック
 
-#### Backend
-- **Framework**: Node.js + Express + GraphQL (Apollo Server)
-- **Database**: PostgreSQL with Prisma ORM
-- **Cache**: Redis for session management and performance
-- **Authentication**: JWT with bcrypt password hashing
-- **Language**: TypeScript for type safety
+#### フロントエンド
+- **フレームワーク**: Next.js 15 (App Router) + React 19 + TypeScript
+- **UIライブラリ**: Tailwind CSS + Shadcn/ui
+- **認証**: NextAuth.js v5 (Beta)
+- **状態管理**: React Hooks + Context API
+- **フォーム処理**: React Hook Form + Zod validation
 
-#### Frontend
-- **Framework**: React 18 + TypeScript
-- **UI Library**: Material-UI (MUI) v5
-- **State Management**: Apollo Client for GraphQL state
-- **Build Tool**: Vite for fast development and builds
-- **PWA**: Service Worker with Workbox
-- **Internationalization**: i18next + react-i18next
+#### バックエンド・データベース
+- **データベース**: SQLite + Prisma ORM
+- **認証プロバイダー**: Credentials Provider (本格認証対応)
+- **パスワード暗号化**: bcryptjs
+- **スキーマ管理**: Prisma with TypeScript
 
-#### Infrastructure & DevOps
-- **Development**: Docker containers for consistent environments
-- **Database Migration**: Prisma migrations
-- **Logging**: Winston for structured logging
-- **Code Quality**: ESLint + TypeScript strict mode
+## 🚀 クイックスタート
 
-## Getting Started
-
-### Prerequisites
-- Node.js 18+ and npm 8+
-- PostgreSQL 13+
-- Redis 6+
+### 前提条件
+- Node.js 18+ および npm 8+
 - Git
 
-### Installation
+### インストール手順
 
-1. **Clone the repository**
+1. **リポジトリをクローン**
    ```bash
    git clone https://github.com/maskin/quizdegogo.git
-   cd quizdegogo
+   cd quizdegogo-app
    ```
 
-2. **Install dependencies**
+2. **依存関係をインストール**
    ```bash
    npm install
    ```
 
-3. **Set up environment variables**
+3. **データベースをセットアップ**
    ```bash
-   # Server environment
-   cp server/.env.example server/.env
-   # Edit server/.env with your database and Redis URLs
-   
-   # Client environment (optional)
-   cp client/.env.example client/.env
+   npm run db:push    # Prismaスキーマをデータベースに反映
+   npm run db:seed    # サンプルデータを投入
    ```
 
-4. **Set up the database**
+4. **開発サーバーを起動**
    ```bash
-   cd server
-   npx prisma migrate dev
-   npx prisma db seed  # Optional: seed with sample data
-   ```
-
-5. **Start the development servers**
-   ```bash
-   # From root directory
    npm run dev
+   # http://localhost:3000 でアクセス可能
+   ```
+
+## 🎮 テストアカウント
+
+開発・テスト用のアカウントが用意されています：
+
+- **管理者**: admin@example.com / admin123
+- **一般ユーザー**: user@example.com / user123
+
+## 📊 データベース構造
+
+SQLite + Prisma ORMを使用したスキーマ構成：
+
+### 主要テーブル
+- **User**: ユーザー認証・プロフィール情報
+- **Category**: クイズカテゴリー（数学、英語、歴史など）
+- **Question**: 問題データ（**timeLimit**フィールド付き）
+- **Choice**: 選択肢データ
+- **Answer**: 回答記録（**choiceId nullable**対応）
+
+### ⚡ タイマー機能の技術実装
+
+#### データベースレベル
+```prisma
+model Question {
+  id          String   @id @default(cuid())
+  timeLimit   Int?     @map("time_limit")  // 秒単位、null=無制限
+  // ... other fields
+}
+
+model Answer {
+  choiceId       String?  @map("choice_id")  // 時間切れ時はnull
+  responseTimeMs Int      @map("response_time_ms")
+  isTimeUp       Boolean  @default(false) @map("is_time_up")
+  // ... other fields
+}
+```
+
+#### フロントエンド実装
+```typescript
+// リアルタイムタイマー
+const [timeLeft, setTimeLeft] = useState<number | null>(null)
+const [isTimeUp, setIsTimeUp] = useState(false)
+
+useEffect(() => {
+  if (timeLeft === null) return
+  if (timeLeft <= 0) {
+    handleTimeUp()
+    return
+  }
+  
+  const timer = setInterval(() => {
+    setTimeLeft(prev => prev! - 1)
+  }, 1000)
+  
+  return () => clearInterval(timer)
+}, [timeLeft])
+```
+
+## 🏗️ システム構成
+
+```
+┌─────────────────────────┐    ┌─────────────────────────┐
+│     Next.js 15 App      │    │      SQLite Database    │
+│   React 19 Frontend     │◄──►│     Prisma ORM          │
+│   Tailwind + Shadcn    │    │   Timer-aware Schema    │
+└─────────────────────────┘    └─────────────────────────┘
+            │
+    ┌─────────────────────────┐
+    │   NextAuth.js v5        │
+    │   Authentication        │
+    └─────────────────────────┘
+```
+
+## 🎯 主要実装ファイル
+
+### コアコンポーネント
+- `src/app/quiz/category/[id]/page.tsx` - メインクイズ画面（タイマー機能完全実装）
+- `src/app/api/answers/route.ts` - 回答処理API（時間切れ対応）
+- `prisma/schema.prisma` - タイマー対応データベーススキーマ
+- `auth.ts` - NextAuth.js v5認証設定
+
+### 開発成果・学習内容
+
+#### 技術的チャレンジと解決策
+1. **Next.js 15 + React 19の最新技術採用**
+   - App Routerでのファイルベースルーティング
+   - Server ComponentsとClient Componentsの適切な使い分け
    
-   # This will start:
-   # - Server on http://localhost:4000
-   # - Client on http://localhost:3000
-   # - GraphQL Playground on http://localhost:4000/graphql
-   ```
+2. **リアルタイムタイマーシステム**
+   - useEffectとsetIntervalを使った正確な時間計測
+   - ブラウザタブ切り替え時の時間同期課題を解決
+   
+3. **ユーザビリティ重視の設計**
+   - ワンクリック回答による操作性向上
+   - 視覚的進捗表示での直感的な状況把握
+   
+4. **データベース設計の柔軟性**
+   - nullable choiceIdで時間切れケースを適切に処理
+   - 応答時間計測によるパフォーマンス分析基盤
 
-### Database Setup
+## 📈 開発ログ・気づき
 
-The application uses PostgreSQL with Prisma ORM. The schema includes:
+### DAY1完了項目（2025年7月）
+✅ **基盤技術選定・実装**
+- Next.js 15 + React 19 + TypeScript構成完了
+- Prisma + SQLiteデータベース構築
+- NextAuth.js v5認証システム実装
+- Tailwind CSS + Shadcn/ui デザインシステム導入
 
-- **Users**: Authentication, profiles, learning preferences
-- **Quizzes**: Quiz metadata, questions, and content
-- **Quiz Attempts**: User quiz sessions and results  
-- **Analytics**: Learning effectiveness tracking
-- **Achievements**: Gamification elements
+✅ **タイマー機能実装**
+- 問題別時間制限設定（データベースレベル）
+- リアルタイムカウントダウン表示
+- 時間切れ自動処理システム
+- 視覚的進捗インジケーター（タイル表示）
 
-### Environment Variables
+✅ **ユーザビリティ向上**
+- ワンクリック回答システム
+- 即座の正誤判定表示
+- 直感的な操作フロー設計
 
-#### Server (.env)
-```bash
-DATABASE_URL="postgresql://username:password@localhost:5432/quizdegogo"
-REDIS_URL="redis://localhost:6379"
-JWT_SECRET="your-super-secret-jwt-key"
-JWT_EXPIRES_IN="7d"
-PORT=4000
-NODE_ENV=development
-CLIENT_URL="http://localhost:3000"
-```
+### 技術的学習ポイント
+1. **Next.js 15の新機能活用**: App Routerの完全活用、Server/Client Components適切な分離
+2. **React 19の新hook活用**: より効率的な状態管理とレンダリング最適化
+3. **Prismaの高度な活用**: 型安全なデータベース操作、マイグレーション管理
+4. **リアルタイム処理**: setIntervalとuseEffectの組み合わせによる正確な時間管理
 
-## Architecture
-
-### System Overview
-
-```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   React PWA     │    │  GraphQL API     │    │  PostgreSQL     │
-│   (Frontend)    │◄──►│  + AI Engine     │◄──►│  + Vector DB    │
-│   Material-UI   │    │  Apollo Server   │    │  Prisma ORM     │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-                               │
-                    ┌──────────────────┐
-                    │  Redis Cluster   │
-                    │  Session Cache   │
-                    └──────────────────┘
-```
-
-### Key Design Principles
-
-1. **API-First Design**: GraphQL API enables future platform integrations
-2. **Scalable Architecture**: Microservices-ready with clear separation of concerns
-3. **Global-Ready**: Multi-language support and cultural adaptation from MVP
-4. **Performance-Oriented**: Caching, optimization, and real-time analytics
-5. **Security-First**: Authentication, authorization, and data protection
-
-## API Documentation
-
-### GraphQL Endpoints
-
-The GraphQL API provides the following main operations:
-
-#### Authentication
-- `login(input: LoginInput!)`: User authentication
-- `register(input: RegisterInput!)`: User registration
-- `logout`: Session termination
-
-#### User Management
-- `me`: Get current user profile
-- `updateProfile(input: UpdateUserInput!)`: Update user preferences
-- `users`: Admin endpoint for user management
-
-#### Quiz Operations
-- `quizzes(filter: QuizFilterInput)`: Get available quizzes
-- `quiz(id: String!)`: Get specific quiz details
-- `recommendedQuizzes`: AI-powered quiz recommendations
-- `startQuizAttempt(quizId: String!)`: Begin quiz session
-- `submitQuizAttempt(attemptId: String!, answers: [String!]!)`: Submit quiz results
-
-#### Analytics
-- `userAnalytics(userId: String, days: Int)`: Learning progress data
-- `quizAnalytics(quizId: String!)`: Quiz effectiveness metrics
-- `globalAnalytics`: Platform-wide statistics (admin only)
-
-### Example Queries
-
-```graphql
-# Get current user
-query Me {
-  me {
-    id
-    username
-    email
-    learningStyle
-    preferredTopics
-  }
-}
-
-# Get quizzes with filters
-query GetQuizzes($filter: QuizFilterInput) {
-  quizzes(filter: $filter) {
-    id
-    title
-    category
-    difficulty
-    language
-    effectiveness
-  }
-}
-
-# Start a quiz
-mutation StartQuiz($quizId: String!) {
-  startQuizAttempt(quizId: $quizId) {
-    id
-    quiz {
-      title
-      questions {
-        id
-        question
-        options
-      }
-    }
-  }
-}
-```
-
-## Development
-
-### Available Scripts
+### 次期開発予定
+- 🔄 **カテゴリー管理機能強化**
+- 📊 **詳細な学習分析機能**
+- 🌍 **多言語対応（i18n）**
+- 📱 **PWA対応・モバイル最適化**
 
 ```bash
-# Root level
-npm run dev          # Start both client and server in development
-npm run build        # Build both client and server for production
-npm run test         # Run all tests
-npm run lint         # Lint both client and server code
+# 開発・実行
+npm run dev          # 開発サーバー起動
+npm run build        # プロダクションビルド
+npm run start        # プロダクション実行
+npm run lint         # コード品質チェック
 
-# Server specific
-npm run server:dev   # Start server in development mode
-npm run server:build # Build server for production
-npm run server:test  # Run server tests
-
-# Client specific  
-npm run client:dev   # Start client development server
-npm run client:build # Build client for production
-npm run client:test  # Run client tests
+# データベース管理
+npm run db:generate  # Prismaクライアント生成
+npm run db:push      # スキーマをデータベースに反映
+npm run db:seed      # サンプルデータ投入
+npm run db:reset     # データベースリセット
+npm run db:studio    # Prisma Studio（GUI管理ツール）
 ```
 
-### Code Structure
+## 📁 プロジェクト構造
 
 ```
-quizdegogo/
-├── client/                 # React frontend
-│   ├── src/
-│   │   ├── components/     # Reusable UI components
-│   │   ├── pages/          # Page components
-│   │   ├── hooks/          # Custom React hooks
-│   │   ├── utils/          # Utility functions
-│   │   ├── graphql/        # GraphQL queries and client
-│   │   └── i18n/           # Internationalization
-│   └── public/             # Static assets
-├── server/                 # Node.js backend
-│   ├── src/
-│   │   ├── graphql/        # GraphQL resolvers and types
-│   │   ├── services/       # Business logic services
-│   │   ├── middleware/     # Express middleware
-│   │   ├── utils/          # Utility functions
-│   │   └── database/       # Database utilities
-│   └── prisma/             # Database schema and migrations
-├── database/               # Database scripts and docs
-├── docs/                   # Documentation
-└── REQUIREMENTS_v3.0.md    # Enhanced requirements specification
+quizdegogo-app/
+├── src/
+│   ├── app/                    # Next.js App Router
+│   │   ├── auth/              # 認証関連ページ
+│   │   ├── quiz/              # クイズ機能
+│   │   │   └── category/[id]/ # 動的カテゴリクイズページ
+│   │   └── api/               # API Routes
+│   │       └── answers/       # 回答処理API
+│   ├── components/            # 再利用可能コンポーネント
+│   │   └── ui/               # Shadcn/ui コンポーネント
+│   └── lib/                  # ユーティリティ・設定
+├── prisma/                   # データベース管理
+│   ├── schema.prisma        # データベーススキーマ
+│   └── seed.ts              # サンプルデータ
+├── auth.ts                  # NextAuth.js設定
+└── package.json            # 依存関係・スクリプト
 ```
 
-## Contributing
+## 🛠️ 開発ガイドライン
 
-### Development Workflow
+### コード品質
+- **TypeScript**: 厳格モードで型安全性を確保
+- **ESLint**: コード品質とベストプラクティスを強制
+- **Prisma**: 型安全なデータベース操作
+- **Zod**: API入力値の実行時型検証
 
-1. **Create a feature branch**
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-
-2. **Make changes with tests**
-   - Write or update tests for new functionality
-   - Follow TypeScript best practices
-   - Use meaningful commit messages
-
-3. **Test your changes**
-   ```bash
-   npm run test
-   npm run lint
-   ```
-
-4. **Submit a pull request**
-   - Describe the changes and their purpose
-   - Include any breaking changes
-   - Add screenshots for UI changes
-
-### Code Style
-
-- **TypeScript**: Strict mode enabled with comprehensive type checking
-- **ESLint**: Enforced code style and best practices
-- **Prettier**: Consistent code formatting
-- **GraphQL**: Use schema-first design with type generation
-
-## Deployment
-
-### Production Build
-
+### Git ワークフロー
 ```bash
-# Build both client and server
-npm run build
-
-# Start production server
-npm start
+git checkout -b feature/new-timer-feature  # 機能ブランチ作成
+# 開発・テスト実行
+npm run lint && npm run build              # 品質チェック
+git commit -m "Add advanced timer display" # 意味のあるコミット
+git push origin feature/new-timer-feature  # プッシュ
 ```
 
-### Environment Setup
+## 🚀 デプロイメント
 
-- **Database**: Set up PostgreSQL with connection pooling
-- **Cache**: Configure Redis cluster for high availability  
-- **Security**: Use environment-specific JWT secrets
-- **Monitoring**: Set up logging and error tracking
-- **CDN**: Configure CDN for static assets
+### プロダクションビルド
+```bash
+npm run build    # 最適化ビルド
+npm run start    # プロダクション実行
+```
 
-### Scaling Considerations
+### 今後のロードマップ
 
-The current MVP architecture supports:
-- **Horizontal scaling**: Stateless server design
-- **Database optimization**: Query optimization and indexing
-- **Caching strategy**: Redis for session and query caching
-- **CDN integration**: Static asset optimization
+#### Phase 2: 機能拡張（今後3-6ヶ月）
+- 📊 詳細な学習分析ダッシュボード
+- 🎮 ゲーミフィケーション要素追加
+- 📱 PWA対応・オフライン機能
+- 🌍 多言語対応（英語・その他）
+- 👥 管理者画面の機能強化
 
-## Roadmap
+#### Phase 3: 本格展開（6-12ヶ月）
+- 🔗 外部API連携
+- 📈 AI活用による個別最適化
+- 📱 ネイティブモバイルアプリ
+- 🌐 クラウドスケーリング対応
 
-### Phase 2: Regional Expansion (Months 18-36)
-- 15+ language support with cultural adaptation
-- Mobile native apps (iOS/Android)
-- IoT device integration APIs
-- Advanced AI recommendation algorithms
-- B2B enterprise features
+## 📄 ライセンス
 
-### Phase 3: Global Domination (Months 36-60)  
-- AR/VR platform integration
-- Voice assistant compatibility
-- Real-time collaborative features
-- Advanced learning analytics with ML
-- Global marketplace for quiz content
+MIT License - 詳細は [LICENSE](LICENSE) ファイルを参照
 
-## License
+## 📞 サポート
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Support
-
-- **Documentation**: [docs/](docs/)
-- **Issues**: [GitHub Issues](https://github.com/maskin/quizdegogo/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/maskin/quizdegogo/discussions)
+- **Issue報告**: [GitHub Issues](https://github.com/maskin/quizdegogo/issues)
+- **機能提案**: [GitHub Discussions](https://github.com/maskin/quizdegogo/discussions)
 
 ---
 
-**QuizDeGogo v3.0** - Building the future of global learning, one quiz at a time. 🚀
+**QuizDeGogo MVP** - 全生命体の向学のための革新的タイマー付きクイズシステム ⚡
