@@ -56,6 +56,12 @@ export default function HomePage() {
             <Link href="/auth/signin">ログイン</Link>
           </Button>
         </div>
+        
+        <div className="mt-8">
+          <Button asChild variant="secondary" size="sm">
+            <Link href="/admin">管理者ページ</Link>
+          </Button>
+        </div>
       </div>
     </div>
   )

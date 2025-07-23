@@ -1,0 +1,74 @@
+{
+  "questions": [
+    {
+      "category": "JavaScript",
+      "title": "ES6のアロー関数の特徴として正しいのは？",
+      "description": "ES6アロー関数の特性について",
+      "difficulty": 3,
+      "timeLimit": 40,
+      "explanation": "アロー関数は自身のthisを持たず、外側のスコープのthisを継承します。",
+      "choices": [
+        {"text": "独自のthisを持つ", "isCorrect": false},
+        {"text": "外側のスコープのthisを継承", "isCorrect": true},
+        {"text": "thisは常にundefined", "isCorrect": false},
+        {"text": "thisは常にglobalオブジェクト", "isCorrect": false}
+      ]
+    },
+    {
+      "category": "React",
+      "title": "useEffectの第2引数の依存配列が空の場合の動作は？",
+      "description": "React useEffectフックの動作について",
+      "difficulty": 3,
+      "timeLimit": 35,
+      "explanation": "依存配列が空の場合、useEffectはコンポーネントのマウント時に1回だけ実行されます。",
+      "choices": [
+        {"text": "毎回レンダリング時に実行", "isCorrect": false},
+        {"text": "マウント時に1回だけ実行", "isCorrect": true},
+        {"text": "実行されない", "isCorrect": false},
+        {"text": "アンマウント時に実行", "isCorrect": false}
+      ]
+    },
+    {
+      "category": "データベース",
+      "title": "リレーショナルデータベースで表同士の関係を定義するのは？",
+      "description": "データベース設計の基本概念について",
+      "difficulty": 2,
+      "timeLimit": 30,
+      "explanation": "外部キー（Foreign Key）によってテーブル間の関係を定義します。",
+      "choices": [
+        {"text": "主キー", "isCorrect": false},
+        {"text": "外部キー", "isCorrect": true},
+        {"text": "インデックス", "isCorrect": false},
+        {"text": "ビュー", "isCorrect": false}
+      ]
+    },
+    {
+      "category": "アルゴリズム",
+      "title": "クイックソートの平均時間計算量は？",
+      "description": "ソートアルゴリズムの計算量について",
+      "difficulty": 4,
+      "timeLimit": 60,
+      "explanation": "クイックソートの平均時間計算量はO(n log n)ですが、最悪の場合はO(n²)になります。",
+      "choices": [
+        {"text": "O(n)", "isCorrect": false},
+        {"text": "O(n log n)", "isCorrect": true},
+        {"text": "O(n²)", "isCorrect": false},
+        {"text": "O(log n)", "isCorrect": false}
+      ]
+    },
+    {
+      "category": "ネットワーク",
+      "title": "HTTPSでデータを暗号化するプロトコルは？",
+      "description": "ウェブセキュリティの基本について",
+      "difficulty": 2,
+      "timeLimit": 25,
+      "explanation": "HTTPSはTLS（Transport Layer Security）プロトコルを使用してデータを暗号化します。",
+      "choices": [
+        {"text": "SSL", "isCorrect": false},
+        {"text": "TLS", "isCorrect": true},
+        {"text": "SSH", "isCorrect": false},
+        {"text": "FTP", "isCorrect": false}
+      ]
+    }
+  ]
+}

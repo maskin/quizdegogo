@@ -14,6 +14,14 @@ QuizDeGogoは、"全生命体"の学習を目的とした革新的な時間制�
 - 🔐 **認証システム**: NextAuth.js v5による安全なユーザー管理
 - 📊 **リアルタイム結果表示**: 即座に正誤判定と結果表示
 
+### 🆕 DAY2新機能（2025年7月23日追加）
+- 📂 **クイズデータインポート機能**: CSV/JSON形式での問題一括読み込み
+- 👑 **管理者ダッシュボード**: 直感的な管理インターフェース
+- 🔍 **データプレビュー機能**: インポート前の内容確認
+- ✅ **データ検証システム**: Zodによる厳密な型チェック
+- 🏷️ **カテゴリ自動作成**: 新規カテゴリの自動生成対応
+- 🔒 **管理者権限制御**: セキュアな管理機能アクセス
+
 ### 技術スタック
 
 #### フロントエンド
@@ -66,6 +74,59 @@ QuizDeGogoは、"全生命体"の学習を目的とした革新的な時間制�
 
 - **管理者**: admin@example.com / admin123
 - **一般ユーザー**: user@example.com / user123
+
+## 📂 クイズデータインポート機能
+
+### 管理者機能アクセス
+1. 管理者アカウントでログイン
+2. `/admin` にアクセスして管理者ダッシュボードを開く
+3. 「データインポート」をクリック
+
+### 対応フォーマット
+
+#### CSV形式
+```csv
+category,title,description,difficulty,timeLimit,explanation,choice1,choice2,choice3,choice4,correct
+JavaScript,配列の要素数を取得するプロパティは？,配列オブジェクトのプロパティについて,1,20,配列の要素数はlengthプロパティで取得できます,size,length,count,elements,2
+React,useState hookの戻り値は？,React Hooksの基本について,2,30,useStateは[state setState]の配列を返します,オブジェクト,配列,文字列,関数,2
+```
+
+#### JSON形式
+```json
+{
+  "questions": [
+    {
+      "category": "JavaScript",
+      "title": "ES6のアロー関数の特徴として正しいのは？",
+      "description": "ES6アロー関数の特性について",
+      "difficulty": 3,
+      "timeLimit": 40,
+      "explanation": "アロー関数は自身のthisを持たず、外側のスコープのthisを継承します。",
+      "choices": [
+        {"text": "独自のthisを持つ", "isCorrect": false},
+        {"text": "外側のスコープのthisを継承", "isCorrect": true},
+        {"text": "thisは常にundefined", "isCorrect": false},
+        {"text": "thisは常にglobalオブジェクト", "isCorrect": false}
+      ]
+    }
+  ]
+}
+```
+
+### フィールド説明
+- **category**: カテゴリ名（自動作成対応）
+- **title**: 問題のタイトル（必須）
+- **description**: 問題の説明（任意）
+- **difficulty**: 難易度 1-5（必須）
+- **timeLimit**: 制限時間（秒、null=無制限）
+- **explanation**: 解説（任意）
+- **choices**: 選択肢（JSON）または choice1-4（CSV）
+- **correct**: 正解番号（CSV）または isCorrect（JSON）
+
+### サンプルファイル
+プロジェクトルートに用意された対応サンプル：
+- `sample-quiz-data.csv`: プログラミング基礎8問
+- `sample-quiz-data.json`: 高度な技術5問
 
 ## 📊 データベース構造
 

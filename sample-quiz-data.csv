@@ -1,0 +1,9 @@
+category,title,description,difficulty,timeLimit,explanation,choice1,choice2,choice3,choice4,correct
+JavaScript,配列の要素数を取得するプロパティは？,配列オブジェクトのプロパティについて,1,20,配列の要素数はlengthプロパティで取得できます,size,length,count,elements,2
+React,useState hookの戻り値は？,React Hooksの基本について,2,30,useStateは[state, setState]の配列を返します,オブジェクト,配列,文字列,関数,2
+TypeScript,型注釈で数値型を表すのは？,TypeScriptの基本型について,1,15,数値型はnumberで表現します,int,float,number,numeric,3
+Node.js,Node.jsで非同期処理を扱う主な方法は？,非同期プログラミングについて,3,45,Promiseとasync/awaitが主要な非同期処理方法です,スレッド,プロセス,Promise,タイマー,3
+CSS,要素を水平中央揃えにするCSSプロパティは？,CSSレイアウトについて,2,25,margin: 0 autoで水平中央揃えができます,text-align: center,margin: 0 auto,float: center,position: center,2
+HTML,HTMLで改行を表すタグは？,HTML基本タグについて,1,10,改行は<br>タグで表現します,<br>,<p>,<div>,<span>,1
+SQL,データベースからデータを取得するSQLコマンドは？,SQL基本コマンドについて,1,20,SELECT文でデータを取得します,INSERT,UPDATE,DELETE,SELECT,4
+Python,Pythonでリストの末尾に要素を追加するメソッドは？,Pythonリスト操作について,2,25,append()メソッドで末尾に要素を追加します,add(),insert(),append(),push(),3
