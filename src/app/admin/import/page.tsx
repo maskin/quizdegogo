@@ -125,7 +125,8 @@ export default function ImportPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ questions: parsedData })
+        body: JSON.stringify({ questions: parsedData }),
+        credentials: 'include',
       })
 
       if (!response.ok) {
