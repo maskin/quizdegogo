@@ -48,20 +48,13 @@ export const config = {
     })
   ],
   callbacks: {
-    jwt({ token, user }) {
-      if (user) {
-        token.id = user.id
-        token.role = user.role
+    session({ session, user }) {
+      if (session.user && user) {
+        session.user.id = user.id;
+        session.user.role = user.role;
       }
-      return token
+      return session;
     },
-    session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string
-        session.user.role = token.role as string
-      }
-      return session
-    }
   },
   pages: {
     signIn: "/auth/signin",
