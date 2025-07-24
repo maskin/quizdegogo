@@ -47,11 +47,19 @@ export const config = {
       }
     })
   ],
+  session: { strategy: "jwt" },
   callbacks: {
-    session({ session, user }) {
-      if (session.user && user) {
-        session.user.id = user.id;
-        session.user.role = user.role;
+    jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+      }
+      return token;
+    },
+    session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.role = token.role as string;
       }
       return session;
     },
