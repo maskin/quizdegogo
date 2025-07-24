@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ja">
+    <html lang="ja" suppressHydrationWarning>
       <body className={inter.className}>
         <SessionProviderWrapper>
           <nav className="bg-primary text-primary-foreground px-6 py-4">
