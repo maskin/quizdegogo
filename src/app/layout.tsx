@@ -24,7 +24,7 @@ export default function RootLayout({
               <h1 className="text-xl font-bold">QuizDeGogo</h1>
               <div className="space-x-4">
                 <a href="/quiz" className="hover:underline">クイズ</a>
-                <a href="/auth/signin" className="hover:underline">ログイン</a>
+                <AuthStatus />
               </div>
             </div>
           </nav>
