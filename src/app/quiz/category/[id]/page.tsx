@@ -358,21 +358,6 @@ export default function CategoryQuizPage() {
                 </Button>
               </div>
             </div>
-
-            {/* ソーシャルシェアボタン */}
-            <div className="mt-8 space-y-4">
-              <h3 className="text-xl font-semibold">結果をシェアしよう！</h3>
-              <div className="flex justify-center gap-4">
-                <Button onClick={() => shareOnTwitter(percentage, questions.length, questions[0]?.category.name)} className="bg-[#1DA1F2] hover:bg-[#1DA1F2]/90 text-white">
-                  <svg className="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.13l-6.51-8.82L5.75 21.75H2.44l7.501-8.574L2.25 2.25h3.308l5.979 6.839L12.25 2.25h6Z"></path></svg>
-                  Twitterでシェア
-                </Button>
-                <Button onClick={() => shareOnLine(percentage, questions.length, questions[0]?.category.name)} className="bg-[#00B900] hover:bg-[#00B900]/90 text-white">
-                  <svg className="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.72 13.28a.75.75 0 01-1.06 0L12 11.06l-3.66 3.66a.75.75 0 01-1.06-1.06L10.94 10 7.28 6.34a.75.75 0 011.06-1.06L12 8.94l3.66-3.66a.75.75 0 011.06 1.06L13.06 10l3.66 3.66a.75.75 0 010 1.06z"></path></svg>
-                  LINEでシェア
-                </Button>
-              </div>
-            </div>
           </CardContent>
         </Card>
       </div>
