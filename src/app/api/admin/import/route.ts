@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/auth'
+import { auth } from '@/auth' // v5のauth関数をインポート
 import { z } from 'zod'
 
 const choiceSchema = z.object({
@@ -25,8 +24,8 @@ const importSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    // 認証チェック
-    const session = await getServerSession(authOptions)
+    // 認証チェック (v5のauth関数を使用)
+    const session = await auth()
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: '認証が必要です' },
