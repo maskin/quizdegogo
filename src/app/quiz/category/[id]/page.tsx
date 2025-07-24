@@ -287,6 +287,18 @@ export default function CategoryQuizPage() {
     window.open(`https://social-plugins.line.me/lineit/share?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank')
   }
 
+  const shareOnTwitter = (percentage: number, totalQuestions: number, categoryName: string) => {
+    const text = `QuizDeGogoで「${categoryName}」クイズに挑戦！${totalQuestions}問中${percentage}%正解しました！あなたの知識を試そう！ #QuizDeGogo #クイズ`
+    const url = `${window.location.origin}/quiz/category/${questions[0]?.category.id}` // クイズカテゴリのURL
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank')
+  }
+
+  const shareOnLine = (percentage: number, totalQuestions: number, categoryName: string) => {
+    const text = `QuizDeGogoで「${categoryName}」クイズに挑戦！${totalQuestions}問中${percentage}%正解しました！あなたの知識を試そう！`
+    const url = `${window.location.origin}/quiz/category/${questions[0]?.category.id}` // クイズカテゴリのURL
+    window.open(`https://social-plugins.line.me/lineit/share?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank')
+  }
+
   if (status === "loading" || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
