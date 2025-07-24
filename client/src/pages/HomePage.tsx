@@ -176,7 +176,7 @@ const HomePage: React.FC = () => {
 
         <Grid container spacing={4}>
           {features.map((feature, index) => (
-            <Grid item xs={12} md={6} lg={4} key={index}>
+            <Grid {...({ item: true, xs: 12, md: 6, lg: 4, key: index } as any)}>
               <MotionCard
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -238,7 +238,7 @@ const HomePage: React.FC = () => {
         </Typography>
         
         <Grid container spacing={4} sx={{ mt: 2 }}>
-          <Grid item xs={12} md={3}>
+          <Grid {...({ item: true, xs: 12, md: 3 } as any)}>
             <Typography variant="h3" color="primary" fontWeight="700">
               10K+
             </Typography>
@@ -247,7 +247,7 @@ const HomePage: React.FC = () => {
             </Typography>
           </Grid>
           
-          <Grid item xs={12} md={3}>
+          <Grid {...({ item: true, xs: 12, md: 3 } as any)}>
             <Typography variant="h3" color="secondary" fontWeight="700">
               50K+
             </Typography>
@@ -256,7 +256,7 @@ const HomePage: React.FC = () => {
             </Typography>
           </Grid>
           
-          <Grid item xs={12} md={3}>
+          <Grid {...({ item: true, xs: 12, md: 3 } as any)}>
             <Typography variant="h3" color="success.main" fontWeight="700">
               15+
             </Typography>
@@ -265,7 +265,7 @@ const HomePage: React.FC = () => {
             </Typography>
           </Grid>
           
-          <Grid item xs={12} md={3}>
+          <Grid {...({ item: true, xs: 12, md: 3 } as any)}>
             <Typography variant="h3" color="warning.main" fontWeight="700">
               80%
             </Typography>

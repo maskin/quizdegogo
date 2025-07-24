@@ -143,7 +143,7 @@ const QuizListPage: React.FC = () => {
       {/* Quiz Grid */}
       <Grid container spacing={3}>
         {mockQuizzes.map((quiz) => (
-          <Grid item xs={12} md={6} lg={4} key={quiz.id}>
+          <Grid {...({ item: true, xs: 12, md: 6, lg: 4, key: quiz.id } as any)}>
             <Card
               sx={{
                 height: '100%',

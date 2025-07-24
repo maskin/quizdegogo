@@ -54,10 +54,10 @@ const LoginPage: React.FC = () => {
     setError(null);
     const result = await login(data);
     
-    if (result.success) {
+    if (result && result.success) {
       navigate('/quizzes');
     } else {
-      setError(result.error || 'Login failed');
+      setError(result?.error || 'Login failed');
     }
   };
 

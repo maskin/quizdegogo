@@ -1,5 +1,6 @@
 import React from 'react';
-import { Box, Container, Typography, Link, Grid, Divider } from '@mui/material';
+import { Box, Container, Typography, Link, Divider } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { useTranslation } from 'react-i18next';
 
 const Footer: React.FC = () => {
@@ -17,7 +18,7 @@ const Footer: React.FC = () => {
     >
       <Container maxWidth="lg">
         <Grid container spacing={4}>
-          <Grid item xs={12} md={4}>
+          <Grid {...({ item: true, xs: 12, md: 4 } as any)}>
             <Typography variant="h6" gutterBottom fontWeight="bold">
               QuizDeGogo
             </Typography>
@@ -29,7 +30,7 @@ const Footer: React.FC = () => {
             </Typography>
           </Grid>
           
-          <Grid item xs={12} md={2}>
+          <Grid {...({ item: true, xs: 12, md: 2 } as any)}>
             <Typography variant="h6" gutterBottom>
               Platform
             </Typography>
@@ -46,7 +47,7 @@ const Footer: React.FC = () => {
             </Box>
           </Grid>
           
-          <Grid item xs={12} md={2}>
+          <Grid {...({ item: true, xs: 12, md: 2 } as any)}>
             <Typography variant="h6" gutterBottom>
               Company
             </Typography>
@@ -63,7 +64,7 @@ const Footer: React.FC = () => {
             </Box>
           </Grid>
           
-          <Grid item xs={12} md={2}>
+          <Grid {...({ item: true, xs: 12, md: 2 } as any)}>
             <Typography variant="h6" gutterBottom>
               Resources
             </Typography>
@@ -80,7 +81,7 @@ const Footer: React.FC = () => {
             </Box>
           </Grid>
           
-          <Grid item xs={12} md={2}>
+          <Grid {...({ item: true, xs: 12, md: 2 } as any)}>
             <Typography variant="h6" gutterBottom>
               Legal
             </Typography>

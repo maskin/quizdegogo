@@ -1,8 +1,9 @@
-import NextAuth, { NextAuthConfig } from "next-auth"
+import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
+import type { NextAuthConfig } from "next-auth"
 
 export const config = {
   adapter: PrismaAdapter(prisma),
@@ -14,7 +15,7 @@ export const config = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
+        if (!credentials?.email || !credentials.password) {
           return null
         }
 
@@ -47,15 +48,16 @@ export const config = {
     })
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    jwt({ token, user }) {
       if (user) {
+        token.id = user.id
         token.role = user.role
       }
       return token
     },
-    async session({ session, token }) {
-      if (token) {
-        session.user.id = token.sub!
+    session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string
         session.user.role = token.role as string
       }
       return session

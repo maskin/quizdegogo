@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import { SessionProvider } from "next-auth/react"
+import SessionProviderWrapper from "./SessionProviderWrapper"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body className={inter.className}>
-        <SessionProvider>
+        <SessionProviderWrapper>
           <nav className="bg-primary text-primary-foreground px-6 py-4">
             <div className="container mx-auto flex justify-between items-center">
               <h1 className="text-xl font-bold">QuizDeGogo</h1>
@@ -31,7 +31,7 @@ export default function RootLayout({
           <main className="min-h-screen bg-background">
             {children}
           </main>
-        </SessionProvider>
+        </SessionProviderWrapper>
       </body>
     </html>
   )

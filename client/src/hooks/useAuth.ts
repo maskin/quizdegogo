@@ -119,7 +119,7 @@ export const useAuth = () => {
       }
     } catch (error) {
       console.error('Login error:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: error instanceof Error ? error.message : String(error) };
     }
   }, [loginMutation, refetch]);
 
@@ -139,7 +139,7 @@ export const useAuth = () => {
       }
     } catch (error) {
       console.error('Register error:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: error instanceof Error ? error.message : String(error) };
     }
   }, [registerMutation, refetch]);
 
